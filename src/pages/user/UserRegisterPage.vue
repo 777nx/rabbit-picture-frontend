@@ -2,7 +2,7 @@
   <div id="userRegisterPage">
     <h2 class="title">兔子云图库 - 用户注册</h2>
     <div class="desc">企业级智能协同云图库</div>
-    <a-form :model="formState" name="basic" autocomplete="off" @finish="handlerFinish">
+    <a-form :model="formState" name="basic" autocomplete="off" @finish="handleSubmit">
       <a-form-item name="userAccount" :rules="[{ required: true, message: '请输入账号' }]">
         <a-input v-model:value="formState.userAccount" placeholder="请输入账号" />
       </a-form-item>
@@ -60,7 +60,7 @@ const formState = reactive<API.UserRegisterRequest>({
  * 提交表单
  * @param values
  */
-const handlerFinish = async (values: any) => {
+const handleSubmit = async (values: any) => {
   // 校验两次输入的密码是否一致
   if (values.password !== values.checkPassword) {
     message.error('两次输入的密码不一致')

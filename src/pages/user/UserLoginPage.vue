@@ -2,7 +2,7 @@
   <div id="userLoginPage">
     <h2 class="title">兔子云图库 - 用户登录</h2>
     <div class="desc">企业级智能协同云图库</div>
-    <a-form :model="formState" name="basic" autocomplete="off" @finish="handlerFinish">
+    <a-form :model="formState" name="basic" autocomplete="off" @finish="handleSubmit">
       <a-form-item name="userAccount" :rules="[{ required: true, message: '请输入账号' }]">
         <a-input v-model:value="formState.userAccount" placeholder="请输入账号" />
       </a-form-item>
@@ -49,7 +49,7 @@ const loginUserStore = useLoginUserStore()
  * 提交表单
  * @param values
  */
-const handlerFinish = async (values: any) => {
+const handleSubmit = async (values: any) => {
   const res = await userLoginUsingPost(values)
   // 登录成功，把登录态保存到全局状态中
   if (res.data.code === 0 && res.data.data) {
