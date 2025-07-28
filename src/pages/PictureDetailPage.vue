@@ -140,6 +140,8 @@ const doDelete = async () => {
   const res = await deletePictureUsingPost({ id })
   if (res.data.code === 0) {
     message.success('删除成功')
+    // 删除成功返回主页
+    router.push({ path: '/' })
   } else {
     message.error('删除失败')
   }
