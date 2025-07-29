@@ -21,32 +21,67 @@
       @change="doTableChange"
     >
       <template #bodyCell="{ column, record }">
-        <template v-if="column.dataIndex === 'userAvatar'">
-          <a-image :src="record.userAvatar" :width="120" />
-        </template>
-        <template v-else-if="column.dataIndex === 'userRole'">
-          <div v-if="record.userRole === 'admin'">
-            <a-tag color="green">管理员</a-tag>
+        <template
+          v-if="['userName', 'userAvatar', 'userProfile', 'userRole'].includes(column.dataIndex)"
+        >
+          <div>
+            <a-input
+              v-if="editableData[record.id]"
+              v-model:value="editableData[record.id][column.dataIndex]"
+            />
+            <template v-else>
+              <template v-if="column.dataIndex === 'userName'">
+                {{ record.userName }}
+              </template>
+              <template v-else-if="column.dataIndex === 'userAvatar'">
+                <a-image :src="record.userAvatar" :width="120" />
+              </template>
+              <template v-else-if="column.dataIndex === 'userProfile'">
+                {{ record.userProfile }}
+              </template>
+              <template v-else-if="column.dataIndex === 'userRole'">
+                <div v-if="record.userRole === 'admin'">
+                  <a-tag color="green">管理员</a-tag>
+                </div>
+                <div v-else>
+                  <a-tag color="blue">普通用户</a-tag>
+                </div>
+              </template>
+              <!--              <template v-else-if="column.dataIndex === 'createTime'">-->
+              <!--                {{ dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') }}-->
+              <!--              </template>-->
+            </template>
           </div>
-          <div v-else>
-            <a-tag color="blue">普通用户</a-tag>
-          </div>
-        </template>
-        <template v-else-if="column.dataIndex === 'createTime'">
-          {{ dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') }}
         </template>
         <template v-else-if="column.key === 'action'">
-          <a-button danger @click="doDelete(record.id)">删除</a-button>
+          <div class="editable-row-operations">
+            <span v-if="editableData[record.id]">
+              <a-space>
+                <a-typography-link @click="save(record.id)">保存</a-typography-link>
+                <a-popconfirm title="确认取消？" @confirm="cancel(record.id)">
+                  <a>取消</a>
+                </a-popconfirm>
+              </a-space>
+            </span>
+            <a-space v-else>
+              <a-button primary @click="edit(record.id)">编辑</a-button>
+              <a-button danger @click="doDelete(record.id)">删除</a-button>
+            </a-space>
+          </div>
         </template>
       </template>
     </a-table>
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref } from 'vue'
-import { deleteUserUsingPost, listUserVoByPageUsingPost } from '@/api/userController.ts'
+import { computed, onMounted, reactive, ref, type UnwrapRef } from 'vue'
+import {
+  deleteUserUsingPost,
+  listUserVoByPageUsingPost,
+  updateUserUsingPost,
+} from '@/api/userController.ts'
 import { message } from 'ant-design-vue'
-import dayjs from 'dayjs'
+import { cloneDeep } from 'lodash-es'
 
 const columns = [
   {
@@ -73,10 +108,10 @@ const columns = [
     title: '用户角色',
     dataIndex: 'userRole',
   },
-  {
-    title: '创建时间',
-    dataIndex: 'createTime',
-  },
+  // {
+  //   title: '创建时间',
+  //   dataIndex: 'createTime',
+  // },
   {
     title: '操作',
     key: 'action',
@@ -145,11 +180,36 @@ const doDelete = async (id: string) => {
   }
   const res = await deleteUserUsingPost({ id })
   if (res.data.code === 0) {
-    message.success("删除成功")
+    message.success('删除成功')
     // 刷新数据
     fetchData()
   } else {
-    message.error("删除失败")
+    message.error('删除失败')
   }
+}
+
+const editableData: UnwrapRef<Record<string, API.UserUpdateRequest>> = reactive({})
+
+const edit = (id: string) => {
+  editableData[id] = cloneDeep(dataList.value.filter((item) => id === item.id)[0])
+}
+const save = async (id: string) => {
+  const res = await updateUserUsingPost({
+    id: editableData[id].id,
+    userName: editableData[id].userName,
+    userAvatar: editableData[id].userAvatar,
+    userProfile: editableData[id].userProfile,
+    userRole: editableData[id].userRole,
+  })
+  if (res.data.code === 0) {
+    message.success('保存成功')
+    fetchData()
+  } else {
+    message.error('保存失败' + res.data.message)
+  }
+  delete editableData[id]
+}
+const cancel = (id: string) => {
+  delete editableData[id]
 }
 </script>
