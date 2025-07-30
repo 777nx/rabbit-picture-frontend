@@ -162,6 +162,11 @@ const columns = [
     width: 80,
   },
   {
+    title: '空间 id',
+    dataIndex: 'SpaceId',
+    width: 80,
+  },
+  {
     title: '审核信息',
     dataIndex: 'reviewMessage',
   },
@@ -195,6 +200,7 @@ const searchParams = reactive<API.PictureQueryRequest>({
 const fetchData = async () => {
   const res = await listPictureByPageUsingPost({
     ...searchParams,
+    nullSpaceId: true,
   })
   if (res.data.code === 0 && res.data.data) {
     dataList.value = res.data.data.records ?? []
