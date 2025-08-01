@@ -1,7 +1,7 @@
 <template>
   <div id="addPicturePage">
     <h2 style="margin-bottom: 16px">
-      {{ route.query?.id ? "修改图片" : "创建图片" }}
+      {{ route.query?.id ? '修改图片' : '创建图片' }}
     </h2>
     <a-typography-paragraph v-if="spaceId" type="secondary">
       保存至空间：<a :href="`/space/${spaceId}`" target="_blank">{{ spaceId }}</a>
@@ -17,8 +17,36 @@
         <UrlPictureUpload :picture="picture" :spaceId="spaceId" :onSuccess="onSuccess" />
       </a-tab-pane>
     </a-tabs>
+    <!-- 图片编辑 -->
+    <div v-if="picture" class="edit-bar">
+      <a-space size="middle">
+        <a-button :icon="h(EditOutlined)" @click="doEditPicture">编辑图片</a-button>
+        <a-button type="primary" :icon="h(FullscreenOutlined)" @click="doImagePainting"
+        >AI 扩图
+        </a-button>
+      </a-space>
+      <ImageCropper
+        ref="imageCropperRef"
+        :imageUrl="picture?.url"
+        :picture="picture"
+        :spaceId="spaceId"
+        :onSuccess="onCropSuccess"
+      />
+      <ImageOutPainting
+        ref="imageOutPaintingRef"
+        :picture="picture"
+        :spaceId="spaceId"
+        :onSuccess="onImageOutPaintingSuccess"
+      />
+    </div>
     <!-- 图片信息表单 -->
-    <a-form v-if="picture" name="pictureForm" layout="vertical" :model="pictureForm" @finish="handleSubmit">
+    <a-form
+      v-if="picture"
+      name="pictureForm"
+      layout="vertical"
+      :model="pictureForm"
+      @finish="handleSubmit"
+    >
       <a-form-item name="name" label="名称">
         <a-input v-model:value="pictureForm.name" placeholder="请输入名称" allow-clear />
       </a-form-item>
@@ -49,7 +77,7 @@
       </a-form-item>
       <a-form-item>
         <a-button type="primary" html-type="submit" style="width: 100%">
-          {{ route.query?.id ? "修改" : "创建" }}
+          {{ route.query?.id ? '修改' : '创建' }}
         </a-button>
       </a-form-item>
     </a-form>
@@ -58,15 +86,18 @@
 
 <script setup lang="ts">
 import PictureUpload from '@/components/PictureUpload.vue'
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, h, onMounted, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import {
   editPictureUsingPost,
   getPictureVoByIdUsingGet,
-  listPictureTagCategoryUsingGet
+  listPictureTagCategoryUsingGet,
 } from '@/api/pictureController.ts'
 import { useRoute, useRouter } from 'vue-router'
 import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
+import ImageCropper from '@/components/ImageCropper.vue'
+import { EditOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
+import ImageOutPainting from '@/components/ImageOutPainting.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -75,7 +106,7 @@ const picture = ref<API.PictureVO>()
 const pictureForm = reactive<API.PictureEditRequest[]>({})
 const updateType = ref<'file' | 'url'>('file')
 // 空间 id
-const spaceId = computed(() =>{
+const spaceId = computed(() => {
   return route.query?.spaceId
 })
 
@@ -121,7 +152,6 @@ const tagOptions = ref<string[]>([])
  * 获取标签和分类选项
  */
 const getTagCategoryOptions = async () => {
-
   const res = await listPictureTagCategoryUsingGet()
   if (res.data.code === 0 && res.data.data) {
     tagOptions.value = (res.data.data.tagList ?? []).map((data: string) => {
@@ -137,7 +167,7 @@ const getTagCategoryOptions = async () => {
       }
     })
   } else {
-    message.error("获取标签分类列表失败：" + res.data.message)
+    message.error('获取标签分类列表失败：' + res.data.message)
   }
 }
 
@@ -147,7 +177,7 @@ const getOldPicture = async () => {
   const id = route.query?.id
   if (id) {
     const res = await getPictureVoByIdUsingGet({
-      id
+      id,
     })
     if (res.data.code === 0 && res.data.data) {
       const data = res.data.data
@@ -164,11 +194,42 @@ onMounted(() => {
   getTagCategoryOptions()
   getOldPicture()
 })
+
+// ----- 图片编辑器引用 -----
+const imageCropperRef = ref()
+
+// 编辑图片
+const doEditPicture = () => {
+  imageCropperRef.value.openModal()
+}
+
+// 编辑成功事件
+const onCropSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
+}
+
+// ----- AI 扩图引用 -----
+const imageOutPaintingRef = ref()
+
+// 打开 AI 扩图弹窗
+const doImagePainting = () => {
+  imageOutPaintingRef.value.openModal()
+}
+
+// AI 扩图保存事件
+const onImageOutPaintingSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
+}
 </script>
 
 <style scoped>
 #addPicturePage {
   max-width: 720px;
   margin: 0 auto;
+}
+
+#addPicturePage .edit-bar {
+  text-align: center;
+  margin: 16px 0;
 }
 </style>
