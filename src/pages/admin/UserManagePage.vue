@@ -82,6 +82,7 @@ import {
 } from '@/api/userController.ts'
 import { message } from 'ant-design-vue'
 import { cloneDeep } from 'lodash-es'
+import dayjs from 'dayjs'
 
 const columns = [
   {
@@ -108,10 +109,10 @@ const columns = [
     title: '用户角色',
     dataIndex: 'userRole',
   },
-  // {
-  //   title: '创建时间',
-  //   dataIndex: 'createTime',
-  // },
+  {
+    title: '创建时间',
+    dataIndex: 'createTime',
+  },
   {
     title: '操作',
     key: 'action',
@@ -137,6 +138,9 @@ const fetchData = async () => {
   })
   if (res.data.code === 0 && res.data.data) {
     dataList.value = res.data.data.records ?? []
+    dataList.value.forEach(item => {
+      item.createTime = dayjs(item.createTime).format('YYYY-MM-DD HH:mm:ss')
+    })
     total.value = res.data.data.total ?? 0
   } else {
     message.error('获取数据失败：' + res.data.message)
