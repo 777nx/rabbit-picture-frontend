@@ -5,6 +5,9 @@
       <a-form-item label="账号">
         <a-input v-model:value="searchParams.userAccount" placeholder="输入账号" allow-clear />
       </a-form-item>
+      <a-form-item label="邮箱">
+        <a-input v-model:value="searchParams.userEmail" placeholder="输入邮箱" allow-clear />
+      </a-form-item>
       <a-form-item label="用户名">
         <a-input v-model:value="searchParams.userName" placeholder="输入用户名" allow-clear />
       </a-form-item>
@@ -58,9 +61,7 @@
             <span v-if="editableData[record.id]">
               <a-space>
                 <a-typography-link @click="save(record.id)">保存</a-typography-link>
-                <a-popconfirm title="确认取消？" @confirm="cancel(record.id)">
-                  <a>取消</a>
-                </a-popconfirm>
+                <a-typography-link @click="cancel(record.id)">取消</a-typography-link>
               </a-space>
             </span>
             <a-space v-else>
@@ -92,6 +93,10 @@ const columns = [
   {
     title: '账号',
     dataIndex: 'userAccount',
+  },
+  {
+    title: '邮箱',
+    dataIndex: 'userEmail',
   },
   {
     title: '用户名',

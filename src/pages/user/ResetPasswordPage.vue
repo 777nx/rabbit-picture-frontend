@@ -1,18 +1,12 @@
 <template>
-  <div id="userRegisterPage">
-    <h2 class="title">兔子云图库 - 用户注册</h2>
+  <div id="resetPasswordPage">
+    <h2 class="title">兔子云图库 - 忘记密码</h2>
     <div class="desc">企业级智能协同云图库</div>
     <a-form :model="formState" name="basic" autocomplete="off" @finish="handleSubmit">
-      <a-form-item
-        name="userEmail"
-        :rules="[
-          { required: true, message: '请输入邮箱' },
-          {
-            pattern: '^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$',
-            message: '请输入正确的邮箱格式',
-          },
-        ]"
-      >
+      <a-form-item name="userEmail" :rules="[
+        { required: true, message: '请输入邮箱' },
+        { pattern: '^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$', message: '请输入正确的邮箱格式' },
+      ]">
         <a-input v-model:value="formState.userEmail" placeholder="请输入邮箱" />
       </a-form-item>
       <a-form-item
@@ -30,15 +24,12 @@
           </template>
         </a-input>
       </a-form-item>
-      <a-form-item name="userAccount" :rules="[{ required: true, message: '请输入账号' }]">
-        <a-input v-model:value="formState.userAccount" placeholder="请输入账号" />
-      </a-form-item>
       <a-form-item
         name="password"
         :rules="[
           { required: true, message: '请输入密码' },
           { min: 8, message: '密码长度不能小于8位' },
-          { max: 16, message: '密码长度不能大于16位' },
+          { max: 16, message: '密码长度不能大于16位' }
         ]"
       >
         <a-input-password
@@ -52,7 +43,7 @@
         :rules="[
           { required: true, message: '请输入确认密码' },
           { min: 8, message: '确认密码长度不能小于8位' },
-          { max: 16, message: '确认密码长度不能大于16位' },
+          { max: 16, message: '确认密码长度不能大于16位' }
         ]"
       >
         <a-input-password
@@ -62,18 +53,29 @@
         />
       </a-form-item>
       <div class="tips">
-        已有账号？
-        <router-link to="/user/login">去登录</router-link>
+        <a-row justify="space-between">
+          <a-col>
+            已有账号？
+            <router-link to="/user/login">去登录</router-link>
+          </a-col>
+          <a-col>
+            没有账号？
+            <router-link to="/user/register">去注册</router-link>
+          </a-col>
+        </a-row>
       </div>
       <a-form-item>
-        <a-button type="primary" html-type="submit" style="width: 100%">注册</a-button>
+        <a-button type="primary" html-type="submit" style="width: 100%">确认提交</a-button>
       </a-form-item>
     </a-form>
   </div>
 </template>
 <script lang="ts" setup>
 import { computed, onBeforeUnmount, reactive, ref } from 'vue'
-import { sendEmailUsingGet, userRegisterUsingPost } from '@/api/userController.ts'
+import {
+  resetPasswordUsingPost,
+  sendEmailUsingGet,
+} from '@/api/userController.ts'
 import { message } from 'ant-design-vue'
 import router from '@/router'
 
@@ -81,7 +83,6 @@ import router from '@/router'
 const formState = reactive<API.UserRegisterRequest>({
   userEmail: '',
   code: '',
-  userAccount: '',
   password: '',
   checkPassword: '',
 })
@@ -106,7 +107,7 @@ const doSendEmail = async () => {
     return
   }
   const res = await sendEmailUsingGet({
-    email: formState.userEmail,
+    email: formState.userEmail
   })
   if (res.data.code === 0) {
     message.success('验证码已发送，请注意查收')
@@ -133,32 +134,27 @@ onBeforeUnmount(() => {
  * @param values
  */
 const handleSubmit = async (values: any) => {
-  // 校验邮箱和账号是否一致
-  if (values.userEmail == values.userAccount) {
-    message.error('邮箱和账号不能一致')
-    return
-  }
   // 校验两次输入的密码是否一致
   if (values.password !== values.checkPassword) {
     message.error('两次输入的密码不一致')
     return
   }
-  const res = await userRegisterUsingPost(values)
-  // 注册成功，跳转到登录页面
+  const res = await resetPasswordUsingPost(values)
+  // 重置密码成功，跳转到登录页面
   if (res.data.code === 0 && res.data.data) {
-    message.success('注册成功')
+    message.success('重置密码成功')
     router.push({
       path: '/user/login',
       replace: true,
     })
   } else {
-    message.error('注册失败：' + res.data.message)
+    message.error('重置密码失败：' + res.data.message)
   }
 }
 </script>
 
 <style scoped>
-#userRegisterPage {
+#resetPasswordPage {
   max-width: 360px;
   margin: 0 auto;
 }

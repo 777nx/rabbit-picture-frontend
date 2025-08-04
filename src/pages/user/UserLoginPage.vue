@@ -3,8 +3,8 @@
     <h2 class="title">兔子云图库 - 用户登录</h2>
     <div class="desc">企业级智能协同云图库</div>
     <a-form :model="formState" name="basic" autocomplete="off" @finish="handleSubmit">
-      <a-form-item name="userAccount" :rules="[{ required: true, message: '请输入账号' }]">
-        <a-input v-model:value="formState.userAccount" placeholder="请输入账号" />
+      <a-form-item name="userAccount" :rules="[{ required: true, message: '请输入账号或邮箱' }]">
+        <a-input v-model:value="formState.userAccount" placeholder="请输入账号或邮箱" />
       </a-form-item>
 
       <a-form-item
@@ -12,6 +12,7 @@
         :rules="[
           { required: true, message: '请输入密码' },
           { min: 8, message: '密码长度不能小于8位' },
+          { max: 16, message: '密码长度不能大于16位' }
         ]"
       >
         <a-input-password
@@ -21,8 +22,15 @@
         />
       </a-form-item>
       <div class="tips">
-        没有账号？
-        <router-link to="/user/register">去注册</router-link>
+        <a-row justify="space-between">
+          <a-col>
+            <router-link to="/user/resetPassword">忘记密码？</router-link>
+          </a-col>
+          <a-col>
+            没有账号？
+            <router-link to="/user/register">去注册</router-link>
+          </a-col>
+        </a-row>
       </div>
       <a-form-item>
         <a-button type="primary" html-type="submit" style="width: 100%">登录</a-button>

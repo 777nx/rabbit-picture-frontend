@@ -247,6 +247,7 @@ declare namespace API {
     updateTime?: string
     userAccount?: string
     userAvatar?: string
+    userEmail?: string
     userName?: string
     userProfile?: string
     userRole?: string
@@ -456,6 +457,11 @@ declare namespace API {
     pictureId?: number
   }
 
+  type sendEmailUsingGETParams = {
+    /** email */
+    email?: string
+  }
+
   type Space = {
     createTime?: string
     editTime?: string
@@ -657,6 +663,7 @@ declare namespace API {
     updateTime?: string
     userAccount?: string
     userAvatar?: string
+    userEmail?: string
     userName?: string
     userPassword?: string
     userProfile?: string
@@ -683,6 +690,7 @@ declare namespace API {
     sortField?: string
     sortOrder?: string
     userAccount?: string
+    userEmail?: string
     userName?: string
     userProfile?: string
     userRole?: string
@@ -690,13 +698,24 @@ declare namespace API {
 
   type UserRegisterRequest = {
     checkPassword?: string
+    code?: string
     password?: string
     userAccount?: string
+    userEmail?: string
+  }
+
+  type UserResetPasswordRequest = {
+    checkPassword?: string
+    code?: string
+    password?: string
+    userEmail?: string
   }
 
   type UserUpdateRequest = {
+    code?: string
     id?: number
     userAvatar?: string
+    userEmail?: string
     userName?: string
     userProfile?: string
     userRole?: string
@@ -707,6 +726,7 @@ declare namespace API {
     id?: number
     userAccount?: string
     userAvatar?: string
+    userEmail?: string
     userName?: string
     userProfile?: string
     userRole?: string
