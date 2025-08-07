@@ -15,6 +15,7 @@ import SearchPicturePage from '@/pages/SearchPicturePage.vue'
 import SpaceAnalyzePage from '@/pages/SpaceAnalyzePage.vue'
 import SpaceUserManagePage from '@/pages/admin/SpaceUserManagePage.vue'
 import ResetPasswordPage from '@/pages/user/ResetPasswordPage.vue'
+import UserInfoPage from '@/pages/user/UserInfoPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,11 @@ const router = createRouter({
       path: '/user/resetPassword',
       name: '忘记密码',
       component: ResetPasswordPage,
+    },
+    {
+      path: '/user/userInfo',
+      name: '个人设置',
+      component: UserInfoPage,
     },
     {
       path: '/admin/userManage',

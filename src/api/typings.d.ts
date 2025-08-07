@@ -448,6 +448,13 @@ declare namespace API {
     userId?: number
   }
 
+  type ResetPasswordRequest = {
+    checkPassword?: string
+    code?: string
+    password?: string
+    userEmail?: string
+  }
+
   type SearchPictureByColorRequest = {
     picColor?: string
     spaceId?: number
@@ -648,6 +655,11 @@ declare namespace API {
     filepath?: string
   }
 
+  type updateUserAvatarUsingPOSTParams = {
+    /** id */
+    id?: number
+  }
+
   type uploadPictureUsingPOSTParams = {
     fileUrl?: string
     id?: number
@@ -673,6 +685,7 @@ declare namespace API {
   type UserAddRequest = {
     userAccount?: string
     userAvatar?: string
+    userEmail?: string
     userName?: string
     userProfile?: string
     userRole?: string
@@ -704,15 +717,7 @@ declare namespace API {
     userEmail?: string
   }
 
-  type UserResetPasswordRequest = {
-    checkPassword?: string
-    code?: string
-    password?: string
-    userEmail?: string
-  }
-
   type UserUpdateRequest = {
-    code?: string
     id?: number
     userAvatar?: string
     userEmail?: string
